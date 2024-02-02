@@ -4,9 +4,13 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import LlamaCpp
 
+# template = """Question: {question}
+#
+# Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+
 template = """Question: {question}
 
-Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+Answer: Act very kindly as a servant."""
 
 prompt = PromptTemplate(template=template, input_variables=["question"])
 
@@ -26,5 +30,5 @@ llm = LlamaCpp(
 )
 
 llm_chain = LLMChain(prompt=prompt, llm=llm)
-question = "What NFL team won the Super Bowl in the year Justin Bieber was born?"
+question = "How will you clean my dirty feet?"
 llm_chain.run(question)

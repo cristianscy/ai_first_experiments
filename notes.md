@@ -187,8 +187,42 @@ __root__
 
 8. Downgrade `pip install --upgrade llama-cpp-python==0.2.26` and rerun but same error.
 
-9. Download model https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF
+9. Download model https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF but same error.
 
 10. Raised post https://huggingface.co/TheBloke/dolphin-2.7-mixtral-8x7b-GGUF/discussions/3
 
-11.
+11. Could run setting parameter `n_gpu_layers = 8`
+
+```
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_community.llms import LlamaCpp
+
+template = """Question: {question}
+
+Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+
+prompt = PromptTemplate(template=template, input_variables=["question"])
+
+# Callbacks support token-wise streaming
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
+n_gpu_layers = 8  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+
+# Make sure the model path is correct for your system!
+llm = LlamaCpp(
+    model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf",
+    n_gpu_layers=n_gpu_layers,
+    n_batch=n_batch,
+    callback_manager=callback_manager,
+    verbose=True,  # Verbose is required to pass to the callback manager
+)
+
+llm_chain = LLMChain(prompt=prompt, llm=llm)
+question = "What are the steps to cook spaghettis?"
+llm_chain.run(question)
+```
+
