@@ -46,7 +46,12 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
-embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
+# embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
+embeddings = LlamaCppEmbeddings(
+    model_path=llama_model_path,
+    n_gpu_layers=n_gpu_layers,
+    n_batch=n_batch
+)
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
 
 # Retrieve and generate using the relevant snippets of the blog.
