@@ -17,7 +17,7 @@ Use 5 lines for each answer.
 Context: {context}
 
 Question: {question}
-Helpful Answer:"""
+Answer: """
 
 prompt = PromptTemplate(
     template=prompt_template, input_variables=["context", "question"]
@@ -29,13 +29,15 @@ callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 llama_model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf"
 
 n_gpu_layers = 9  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
-n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+n_batch = 1024  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+n_ctxt=2048
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
     model_path=llama_model_path,
     n_gpu_layers=1,
     n_batch=n_batch,
+    n_ctxt=n_ctxt,
     callback_manager=callback_manager,
     verbose=True,  # Verbose is required to pass to the callback manager
 )
@@ -46,15 +48,15 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
-# embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
 embeddings = LlamaCppEmbeddings(
     model_path=llama_model_path,
     n_gpu_layers=8,
-    n_batch=n_batch
+    n_batch=n_batch,
+    n_ctxt=n_ctxt
 )
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
 
-# Retrieve and generate using the relevant snippets of the blog.
+# Retrieve and generate using the relevant snippets of the pdf
 retriever = vectorstore.as_retriever()
 
 def format_docs(docs):
