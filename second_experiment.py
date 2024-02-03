@@ -72,4 +72,4 @@ rag_chain = (
 rag_chain.invoke("Explain extensively the SWAN working modes.")
 
 # cleanup
-vectorstore.delete_collection()
+#vectorstore.delete_collection()
