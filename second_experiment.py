@@ -50,7 +50,8 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=700, chunk_overlap=150
 splits = text_splitter.split_documents(docs)
 embeddings = LlamaCppEmbeddings(
     model_path=llama_model_path,
-    n_gpu_layers=8
+    n_gpu_layers=8,
+    n_batch=256
 )
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
 
