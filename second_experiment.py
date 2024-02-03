@@ -47,7 +47,7 @@ llm = LlamaCpp(
 loader = PyPDFLoader("./pdf/Thesis.pdf")
 docs = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=700, chunk_overlap=150)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
 splits = text_splitter.split_documents(docs)
 # # LlamaCppEmbeddings
 # embeddings = LlamaCppEmbeddings(
