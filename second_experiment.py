@@ -34,7 +34,7 @@ n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in y
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
     model_path=llama_model_path,
-    n_gpu_layers=n_gpu_layers,
+    n_gpu_layers=1,
     n_batch=n_batch,
     callback_manager=callback_manager,
     verbose=True,  # Verbose is required to pass to the callback manager
@@ -49,7 +49,7 @@ splits = text_splitter.split_documents(docs)
 # embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
 embeddings = LlamaCppEmbeddings(
     model_path=llama_model_path,
-    n_gpu_layers=n_gpu_layers,
+    n_gpu_layers=7,
     n_batch=n_batch
 )
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
