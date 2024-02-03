@@ -226,8 +226,13 @@ question = "What are the steps to cook spaghettis?"
 llm_chain.run(question)
 ```
 
-## 02/02/0224
+## 02/02/2024
 
 1. Try to follow this mini-project https://www.e2enetworks.com/blog/implementing-a-rag-pipeline-with-mixtral-8x7b
 
-2.
+2. I don't understand what I am doing... :(
+
+## 03/02/2024
+
+1. As I don't understand what I was doing I decided to first follow this guide https://python.langchain.com/docs/use_cases/question_answering/ though it is paid, to understand the basics blocks of LLM Chains and afterwards be able to do something similar locally in my computer.
+
