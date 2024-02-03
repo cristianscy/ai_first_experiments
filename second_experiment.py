@@ -9,6 +9,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_community.embeddings import LlamaCppEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 
 prompt_template = """Use the following pieces of context to answer the question at the end. \
 If you don't know the answer, just say that you don't know, don't try to make up an answer. \
@@ -48,11 +49,23 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=700, chunk_overlap=150)
 splits = text_splitter.split_documents(docs)
-embeddings = LlamaCppEmbeddings(
-    model_path=llama_model_path,
-    n_gpu_layers=8,
-    n_batch=256
+# # LlamaCppEmbeddings
+# embeddings = LlamaCppEmbeddings(
+#    model_path=llama_model_path,
+#    n_gpu_layers=8,
+#    n_batch=256
+#)
+
+# HuggingFaceEmbeddings
+model_name = "sentence-transformers/all-mpnet-base-v2"
+model_kwargs = {'device': 'cuda:0'}
+encode_kwargs = {'normalize_embeddings': False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=model_name,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
 )
+
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
 
 # Retrieve and generate using the relevant snippets of the pdf
