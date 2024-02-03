@@ -226,3 +226,8 @@ question = "What are the steps to cook spaghettis?"
 llm_chain.run(question)
 ```
 
+## 02/02/0224
+
+1. Try to follow this mini-project https://www.e2enetworks.com/blog/implementing-a-rag-pipeline-with-mixtral-8x7b
+
+2.
