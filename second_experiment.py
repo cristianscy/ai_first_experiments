@@ -49,7 +49,7 @@ splits = text_splitter.split_documents(docs)
 # embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
 embeddings = LlamaCppEmbeddings(
     model_path=llama_model_path,
-    n_gpu_layers=7,
+    n_gpu_layers=8,
     n_batch=n_batch
 )
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
@@ -62,7 +62,7 @@ def format_docs(docs):
 
 rag_chain = (
     {"context": retriever | format_docs, "question": RunnablePassthrough()}
-    | custom_prompt
+    | prompt
     | llm
     | StrOutputParser()
 )

@@ -237,3 +237,5 @@ llm_chain.run(question)
 1. As I don't understand what I was doing I decided to first follow this guide https://python.langchain.com/docs/use_cases/question_answering/ though it is paid, to understand the basics blocks of LLM Chains and afterwards be able to do something similar locally in my computer.
 
 2. I found this URL https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_qa that is very interesting for implementing QA RAG using local models.
+
+3. I could develop a python script to run LLM QA RAG locally https://github.com/cristianscy/ai_first_experiments/blob/0d72618828371ed82e65ab5b8b4f1dffd26c3556/second_experiment.py. However as my local HW is not very powerful, it is taking so long to do the embeddings...
