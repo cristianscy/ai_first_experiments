@@ -3,13 +3,11 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import LlamaCpp
-
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-
 from langchain_community.embeddings import LlamaCppEmbeddings
 
 prompt_template = """Use the following pieces of context to answer the question at the end. \
@@ -30,7 +28,7 @@ callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 llama_model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf"
 
-n_gpu_layers = 8  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+n_gpu_layers = 9  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
 n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
 
 # Make sure the model path is correct for your system!
@@ -38,14 +36,9 @@ llm = LlamaCpp(
     model_path=llama_model_path,
     n_gpu_layers=n_gpu_layers,
     n_batch=n_batch,
-    n_ctxt=2048,
     callback_manager=callback_manager,
     verbose=True,  # Verbose is required to pass to the callback manager
 )
-
-# llm_chain = LLMChain(prompt=prompt, llm=llm)
-# question = "How will you clean my dirty feet?"
-# llm_chain.run(question)
 
 # Load PDF
 loader = PyPDFLoader("./pdf/Thesis.pdf")
@@ -53,7 +46,7 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
-embeddings = LlamaCppEmbeddings(model_path=llama_model_path, n_ctx=2048)
+embeddings = LlamaCppEmbeddings(model_path=llama_model_path)
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
 
 # Retrieve and generate using the relevant snippets of the blog.
