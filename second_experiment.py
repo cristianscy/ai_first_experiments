@@ -52,7 +52,7 @@ embeddings = LlamaCppEmbeddings(
     n_gpu_layers=8,
     n_batch=n_batch
 )
-vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
+vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
 
 # Retrieve and generate using the relevant snippets of the blog.
 retriever = vectorstore.as_retriever()
