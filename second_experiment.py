@@ -51,8 +51,7 @@ splits = text_splitter.split_documents(docs)
 embeddings = LlamaCppEmbeddings(
     model_path=llama_model_path,
     n_gpu_layers=8,
-    n_batch=n_batch,
-    n_ctxt=n_ctxt
+    n_batch=n_batch
 )
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
 
