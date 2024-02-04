@@ -238,4 +238,10 @@ llm_chain.run(question)
 
 2. I found this URL https://python.langchain.com/docs/use_cases/question_answering/local_retrieval_qa that is very interesting for implementing QA RAG using local models.
 
-3. I could develop a python script to run LLM QA RAG locally https://github.com/cristianscy/ai_first_experiments/blob/72010e9022a9bca46ae6b450cf6a17003d8cd3a1/second_experiment.py. However as my local HW is not very powerful, it is taking so long to do the embeddings...
+3. I could develop a python script to run LLM QA RAG locally https://github.com/cristianscy/ai_first_experiments/blob/72010e9022a9bca46ae6b450cf6a17003d8cd3a1/second_experiment.py. However as my local HW is not very powerful, it is taking so long to do the embeddings... and has some token length errors.
+
+## 04/02/2024
+
+4. Just waking up, I executed locally this code https://github.com/cristianscy/ai_first_experiments/blob/4bcb55d426e29f0b5e51930648d3fc6455ffca07/second_experiment.py ans it worked perfectly :) So, my first objective, that's to execute locally a LLM QA RAG is achieved in 3 days!
+
+

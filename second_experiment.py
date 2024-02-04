@@ -66,7 +66,7 @@ embeddings = HuggingFaceEmbeddings(
     encode_kwargs=encode_kwargs
 )
 
-vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db_hfembeddings")
+vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db/chroma_db_hfembeddings")
 
 # Retrieve and generate using the relevant snippets of the pdf
 retriever = vectorstore.as_retriever()
