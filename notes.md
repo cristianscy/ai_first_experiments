@@ -242,6 +242,8 @@ llm_chain.run(question)
 
 ## 04/02/2024
 
+### Working locally
+
 1. Just waking up, I executed locally this code https://github.com/cristianscy/ai_first_experiments/blob/4bcb55d426e29f0b5e51930648d3fc6455ffca07/second_experiment.py ans it worked perfectly :) So, my first objective, that's to execute locally a LLM QA RAG is achieved in 3 days!
 
 2. But I tried to execute the same code with another question https://github.com/cristianscy/ai_first_experiments/blob/fbd76194e3bd44b3c5f0002980c23bfd98c5c0af/second_experiment.py and it failed with error `ValueError: Requested tokens (597) exceed context window of 512`
