@@ -434,3 +434,6 @@ rag_chain.invoke("Which antennas were used for doing the measurements?")
 #vectorstore.delete_collection()
 ```
 
+### Working with OpenAI API
+
+1. Implement this https://python.langchain.com/docs/use_cases/question_answering/sources bt adapted to read from local PDF >>
