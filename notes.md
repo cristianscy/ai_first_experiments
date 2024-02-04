@@ -242,6 +242,193 @@ llm_chain.run(question)
 
 ## 04/02/2024
 
-4. Just waking up, I executed locally this code https://github.com/cristianscy/ai_first_experiments/blob/4bcb55d426e29f0b5e51930648d3fc6455ffca07/second_experiment.py ans it worked perfectly :) So, my first objective, that's to execute locally a LLM QA RAG is achieved in 3 days!
+1. Just waking up, I executed locally this code https://github.com/cristianscy/ai_first_experiments/blob/4bcb55d426e29f0b5e51930648d3fc6455ffca07/second_experiment.py ans it worked perfectly :) So, my first objective, that's to execute locally a LLM QA RAG is achieved in 3 days!
 
+2. But I tried to execute the same code with another question https://github.com/cristianscy/ai_first_experiments/blob/fbd76194e3bd44b3c5f0002980c23bfd98c5c0af/second_experiment.py and it failed with error `ValueError: Requested tokens (597) exceed context window of 512`
+
+3. I reduced the `chunk_size = 450` and changes some other parameters like `n_batch = 1024` and `n_ctxt = 2048` but the LLM is not giving a really meaninful answer, due it seems it lacks context to answer well the question
+
+```
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_community.llms import LlamaCpp
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_community.embeddings import LlamaCppEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
+
+prompt_template = """Use the following pieces of context to answer the question at the end. \
+If you don't know the answer, just say that you don't know, don't try to make up an answer. \
+Use all the necessary lines to provide a really meaninful answer.
+
+Context: {context}
+
+Question: {question}
+Answer: """
+
+prompt = PromptTemplate(
+    template=prompt_template, input_variables=["context", "question"]
+)
+
+# Callbacks support token-wise streaming
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
+llama_model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf"
+
+n_gpu_layers = 8  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+n_batch = 1024  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+n_ctxt = 2048
+
+# Make sure the model path is correct for your system!
+llm = LlamaCpp(
+    model_path=llama_model_path,
+    n_gpu_layers=8,
+    n_batch=n_batch,
+    n_ctxt=n_ctxt,
+    callback_manager=callback_manager,
+    verbose=True,  # Verbose is required to pass to the callback manager
+)
+
+# Load PDF
+loader = PyPDFLoader("./pdf/Thesis.pdf")
+docs = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=450, chunk_overlap=100)
+splits = text_splitter.split_documents(docs)
+# # LlamaCppEmbeddings
+# embeddings = LlamaCppEmbeddings(
+#    model_path=llama_model_path,
+#    n_gpu_layers=8,
+#    n_batch=256
+#)
+
+# HuggingFaceEmbeddings
+model_name = "sentence-transformers/all-mpnet-base-v2"
+model_kwargs = {'device': 'cuda:0'}
+encode_kwargs = {'normalize_embeddings': False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=model_name,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
+)
+
+vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db/chroma_db_hfembeddings")
+
+# Retrieve and generate using the relevant snippets of the pdf
+retriever = vectorstore.as_retriever()
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+rag_chain.invoke("Which MAC extensions were implemented in this Thesis? Explain them extensively.")
+
+# cleanup
+#vectorstore.delete_collection()
+```
+
+4. Even doing a more sinthetic and easy question... It provides short and unrelated answer... ALso the script fails sometimes with this kind of errors `ValueError: Requested tokens (597) exceed context window of 512`. Whether it fails depends on the `chunk_size` but also on the `prompt_template` and the `question`.
+
+5. I am trying with another PDF. I asked the question `What is this project about?` and it throw errors like `ValueError: Requested tokens (597) exceed context window of 512`, but when I changed the question to `Which antennas were used for doing the measurements?` it provided a very short but correct answer.
+
+```
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_community.llms import LlamaCpp
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_community.embeddings import LlamaCppEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
+
+prompt_template = """Use the following pieces of context to answer the question at the end. \
+If you don't know the answer, just say that you don't know, don't try to make up an answer. \
+Provide de answer in 5 lines of text.
+
+Context: {context}
+
+Question: {question}
+Answer: """
+
+prompt = PromptTemplate(
+    template=prompt_template, input_variables=["context", "question"]
+)
+
+# Callbacks support token-wise streaming
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
+llama_model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf"
+
+n_gpu_layers = 8  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+n_batch = 1024  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+n_ctxt = 2048
+
+# Make sure the model path is correct for your system!
+llm = LlamaCpp(
+    model_path=llama_model_path,
+    n_gpu_layers=1,
+    n_batch=n_batch,
+    n_ctxt=n_ctxt,
+    callback_manager=callback_manager,
+    verbose=True,  # Verbose is required to pass to the callback manager
+)
+
+# Load PDF
+loader = PyPDFLoader("./pdf/FINAL_REPORT.pdf")
+docs = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+splits = text_splitter.split_documents(docs)
+# # LlamaCppEmbeddings
+# embeddings = LlamaCppEmbeddings(
+#    model_path=llama_model_path,
+#    n_gpu_layers=8,
+#    n_batch=256
+#)
+
+# HuggingFaceEmbeddings
+model_name = "sentence-transformers/all-mpnet-base-v2"
+model_kwargs = {'device': 'cuda:0'}
+encode_kwargs = {'normalize_embeddings': False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=model_name,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
+)
+
+vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db/chroma_db_hfembeddings")
+
+# Retrieve and generate using the relevant snippets of the pdf
+retriever = vectorstore.as_retriever()
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+rag_chain.invoke("Which antennas were used for doing the measurements?")
+
+# cleanup
+#vectorstore.delete_collection()
+```
 

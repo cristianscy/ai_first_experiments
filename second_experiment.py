@@ -13,7 +13,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 
 prompt_template = """Use the following pieces of context to answer the question at the end. \
 If you don't know the answer, just say that you don't know, don't try to make up an answer. \
-Use 5 lines for each answer.
+Provide de answer in 5 lines of text.
 
 Context: {context}
 
@@ -29,9 +29,9 @@ callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 llama_model_path="/home/cristian/development/ai/models/dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf"
 
-n_gpu_layers = 9  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
-n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-n_ctxt = 1024
+n_gpu_layers = 8  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+n_batch = 1024  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
+n_ctxt = 2048
 
 # Make sure the model path is correct for your system!
 llm = LlamaCpp(
@@ -44,10 +44,10 @@ llm = LlamaCpp(
 )
 
 # Load PDF
-loader = PyPDFLoader("./pdf/Thesis.pdf")
+loader = PyPDFLoader("./pdf/FINAL_REPORT.pdf")
 docs = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
 splits = text_splitter.split_documents(docs)
 # # LlamaCppEmbeddings
 # embeddings = LlamaCppEmbeddings(
@@ -81,7 +81,7 @@ rag_chain = (
     | StrOutputParser()
 )
 
-rag_chain.invoke("Which MAC extensions were implemented in this Thesis?")
+rag_chain.invoke("Which antennas were used for doing the measurements?")
 
 # cleanup
 #vectorstore.delete_collection()
