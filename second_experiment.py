@@ -81,7 +81,7 @@ rag_chain = (
     | StrOutputParser()
 )
 
-rag_chain.invoke("Explain extensively the SWAN working modes.")
+rag_chain.invoke("Which MAC extensions were implemented in this Thesis?")
 
 # cleanup
 #vectorstore.delete_collection()
