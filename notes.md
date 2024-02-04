@@ -438,4 +438,6 @@ rag_chain.invoke("Which antennas were used for doing the measurements?")
 
 1. Implement this https://python.langchain.com/docs/use_cases/question_answering/sources but adapted to read from local PDF >> https://github.com/cristianscy/ai_first_experiments/blob/a4f3cb1b0af47d76ad90774f786154a7a70abaa3/pdf_returning_sources_openai.ipynb
 
-2. Implement this https://python.langchain.com/docs/use_cases/question_answering/chat_history but adapted to read from local PDF >>
+2. Implement this https://python.langchain.com/docs/use_cases/question_answering/chat_history but adapted to read from local PDF >> https://github.com/cristianscy/ai_first_experiments/blob/9d3f9fa81db978502305ca84578b6c6ff72b0e42/openai/pdf_chat_history_openai.ipynb
+
+3.
